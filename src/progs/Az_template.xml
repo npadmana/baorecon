@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<!-- Input XML template for reconstruction on the RunAz data -->
+<params>
+  <!-- First specify all the common parameters -->
+  <LBox>2000.0</LBox>
+  <Ngrid>512</Ngrid>
+  <ReconParams>
+    <bias>1.0</bias>
+    <smooth>10.0</smooth>
+    <MaxIterations>2000</MaxIterations>
+    <NRandomFac>10</NRandomFac>
+  </ReconParams>
+  <XiParams>
+    <rmin>10.0</rmin>
+    <dr>3.0</dr>
+    <Nbins>50</Nbins>
+    <smooth>2.0</smooth>
+  </XiParams>
+  <ShellParams>
+    <xcen>0.0</xcen>
+    <ycen>0.0</ycen>
+    <zcen>0.0</zcen>
+    <rmin>200.0</rmin>
+    <rmax>1800.0</rmax>
+    <threshold>0.75</threshold>
+    <nover>4</nover>
+  </ShellParams>
+  <PkPrior>
+    <fn>pknlin000.dat</fn>
+    <bias>1.0</bias>
+    <noise>1.e3</noise>
+  </PkPrior>
+
+
+  <!-- File specifications go below -->
+  <PBCreal id="Az0">
+    <input>dm_1.0000.bin</input>
+    <output>xi_recon_PBC.out</output>
+  </PBCreal>
+</params>
