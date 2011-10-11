@@ -341,7 +341,15 @@ int Particle::AsciiWriteSerial(const char *outfilename)
    VecGetArray(px, &_px); VecGetArray(py, &_py); VecGetArray(pz, &_pz); VecGetArray(pw, &_pw);
    for (int iproc = 0; iproc < size; ++iproc) {
      if (iproc == rank) {
-       fp = fopen(outfilename, "a");
+
+       /* The rank 0 process should open a new file. Everyone else 
+        * should append to the file. The first step is not essential, but
+        * you WILL get into trouble, if you are not careful */
+       if (rank == 0) {
+        fp = fopen(outfilename, "w");
+       } else {
+        fp = fopen(outfilename, "a");
+       }
        if (!fp) RAISE_ERR(99, "Unable to open file....\n");
        for (int ii = lo; ii < hi; ++ii) fprintf(fp, "%20.10e %20.10e %20.10e\n",
                 _px[ii-lo],_py[ii-lo],_pz[ii-lo]);
@@ -378,8 +386,16 @@ int Particle::AsciiWriteWeightedSerial(const char *outfilename)
    VecGetArray(px, &_px); VecGetArray(py, &_py); VecGetArray(pz, &_pz); VecGetArray(pw, &_pw);
    for (int iproc = 0; iproc < size; ++iproc) {
      if (iproc == rank) {
-       fp = fopen(outfilename, "a");
+       /* The rank 0 process should open a new file. Everyone else 
+        * should append to the file. The first step is not essential, but
+        * you WILL get into trouble, if you are not careful */
+       if (rank == 0) {
+        fp = fopen(outfilename, "w");
+       } else {
+        fp = fopen(outfilename, "a");
+       }
        if (!fp) RAISE_ERR(99, "Unable to open file....\n");
+
        for (int ii = lo; ii < hi; ++ii) fprintf(fp, "%20.10e %20.10e %20.10e %20.10e\n",
                 _px[ii-lo],_py[ii-lo],_pz[ii-lo], _pw[ii-lo]);
        fflush(fp);
