@@ -41,6 +41,9 @@ int main(int argc, char *args[]) {
     Mask3D dummymask;
     Particle pm;
     pm.AsciiReadWeightedSerial(pars.mask.fn.c_str());
+    VecShift(pm.px, pars.recon.origin[0]);
+    VecShift(pm.py, pars.recon.origin[1]);
+    VecShift(pm.pz, pars.recon.origin[2]);
     Delta del1(pars.Ngrid, pars.Lbox, 1, pars.mask.thresh, dummymask, pm, pars.recon.smooth);
    
     /********************************************
@@ -105,8 +108,16 @@ int main(int argc, char *args[]) {
       Particle pp, pr;
       DensityGrid dg(pars.Ngrid, pars.Lbox);
       pp.AsciiReadWeightedSerial(files->indata.c_str());
+      // Translate for reconstruction
+      VecShift(pp.px, pars.recon.origin[0]);
+      VecShift(pp.py, pars.recon.origin[1]);
+      VecShift(pp.pz, pars.recon.origin[2]);
       PetscPrintf(PETSC_COMM_WORLD,"Read in %i particles.....\n",pp.npart);
       pr.AsciiReadWeightedSerial(files->inrand.c_str());
+      // Translate for reconstruction
+      VecShift(pr.px, pars.recon.origin[0]);
+      VecShift(pr.py, pars.recon.origin[1]);
+      VecShift(pr.pz, pars.recon.origin[2]);
       PetscPrintf(PETSC_COMM_WORLD,"Read in %i randoms.....\n",pr.npart);
       pp.SlabDecompose(dg);
       pr.SlabDecompose(dg);
@@ -184,13 +195,13 @@ int main(int argc, char *args[]) {
 
         // Before writing the particles out, shift them to such that the observer is at (0,0,0)
         // This simplifies calculating perpendicular and parallel correlation functions
-        VecShift(pp.px, pars.recon.origin[0]);
-        VecShift(pp.py, pars.recon.origin[1]);
-        VecShift(pp.pz, pars.recon.origin[2]);
+        VecShift(pp.px, -pars.recon.origin[0]);
+        VecShift(pp.py, -pars.recon.origin[1]);
+        VecShift(pp.pz, -pars.recon.origin[2]);
         // Do the same to the shifted randoms
-        VecShift(pr.px, pars.recon.origin[0]);
-        VecShift(pr.py, pars.recon.origin[1]);
-        VecShift(pr.pz, pars.recon.origin[2]);
+        VecShift(pr.px, -pars.recon.origin[0]);
+        VecShift(pr.py, -pars.recon.origin[1]);
+        VecShift(pr.pz, -pars.recon.origin[2]);
         
 
 
