@@ -720,7 +720,7 @@ void Particle::RadialDisplace(Vec qx, Vec qy, Vec qz, vector<double> &origin, do
     rr = sqrt(x*x + y*y + z*z) + 1.e-10; // For the case that a particle exactly is on the origin
 
     // Compute q.r
-    qr = (x*_qx[ii] + y*_qy[ii] + z *_qz[ii])/rr
+    qr = (x*_qx[ii] + y*_qy[ii] + z *_qz[ii])/rr;
 
     /* Now shift */
     _px[ii] += (factor*qr*x)/rr;
