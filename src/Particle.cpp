@@ -697,7 +697,7 @@ void Particle::RadialDisplace(Vec qx, Vec qy, Vec qz, vector<double> &origin, do
   // Local arrays
   double *_px, *_py, *_pz, *_qx, *_qy, *_qz;
   PetscInt lo, hi, np;
-  double rr, x, y, z;
+  double rr, x, y, z, qr;
 
   // Get the ranges of objects
   VecGetOwnershipRange(px, &lo, &hi);
@@ -719,10 +719,13 @@ void Particle::RadialDisplace(Vec qx, Vec qy, Vec qz, vector<double> &origin, do
     z = _pz[ii] - origin[2];
     rr = sqrt(x*x + y*y + z*z) + 1.e-10; // For the case that a particle exactly is on the origin
 
+    // Compute q.r
+    qr = (x*_qx[ii] + y*_qy[ii] + z *_qz[ii])/rr
+
     /* Now shift */
-    _px[ii] += (factor*_qx[ii]*x)/rr;
-    _py[ii] += (factor*_qy[ii]*y)/rr;
-    _pz[ii] += (factor*_qz[ii]*z)/rr;
+    _px[ii] += (factor*qr*x)/rr;
+    _py[ii] += (factor*qr*y)/rr;
+    _pz[ii] += (factor*qr*z)/rr;
   }
 
 
