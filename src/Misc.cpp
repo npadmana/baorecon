@@ -91,4 +91,44 @@ double PkStruct::operator()(PetscInt ii) {
 }
 
 
+/* Histogram a PETSC vector 
+ *
+ * x is the vector
+ * nbins -- number of bins
+ * xmin, xmax -- histogram xmin, xmax -- assume uniform bins
+ * hh -- output vector -- assumed to be defined.
+ */
+void VecHist(const Vec& x, int nbins, double xmin, double xmax, vector<double>& hh) {
+  gsl_histogram *h1; 
+  double *_x, x1;
+  PetscInt lo, hi;
+  vector<double> tmp(nbins);
+
+  // Set up the histogram struct
+  h1 = gsl_histogram_alloc(nbins);
+  gsl_histogram_set_ranges_uniform(h1, xmin, xmax);
+
+  // Get the array
+  VecGetOwnershipRange(x, &lo, &hi);
+  hi -= lo;
+  VecGetArray(x, &_x);
+  for (PetscInt ii=0; ii < hi; ++ii) {
+    x1 = _x[ii];
+    if (x1 < xmin) x1 = xmin;
+    if (x1 >= xmax) x1 = xmax - 1.e-10;
+    gsl_histogram_increment(h1, x1);
+  }
+  VecRestoreArray(x, &_x);
+  
+  // Fill the temporary output vector
+  for (int ii =0; ii<nbins; ++ii) 
+    tmp[ii] = gsl_histogram_get(h1, ii);
+
+  // MPI Allreduce
+  MPI_Allreduce(&tmp[0], &hh[0], nbins, MPI_DOUBLE, MPI_SUM, PETSC_COMM_WORLD); 
+
+  // Clean up
+  gsl_histogram_free(h1);
+}
+
 

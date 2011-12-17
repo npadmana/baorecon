@@ -21,6 +21,7 @@
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_interp.h>
 #include <gsl/gsl_spline.h>
+#include <gsl/gsl_histogram.h>
 
 // MPI FFTW
 #include "drfftw_mpi.h"
@@ -48,7 +49,7 @@ using namespace std;
 /* Miscellaneous routines go here */
 double periodic(double x, double L=1.0);
 void _mydestroy(Vec &v);
-
+void VecHist(const Vec& x, int nbins, double xmin, double xmax, vector<double>& hh);
 
 // Forward declarations
 class Mask3D; 
