@@ -248,11 +248,11 @@ void DensityGrid::PrintCells (Vec v,double smooth) {       // RS:  hackery
 
 void DensityGrid::CIC(Vec v, const Particle &pp, bool overdense) {
   // variables to store particle positions
-  double *_px, *_py, *_pz;
+  double *_px, *_py, *_pz, *_pw;
   PetscInt lo, hi, nlocal;
   
   int ii[3], ix, iy,iz; 
-  double dx, dy, dz, x0, y0, z0;
+  double dx, dy, dz, x0, y0, z0, w0;
   double rho_mean;
 
   // Mean density
@@ -270,29 +270,32 @@ void DensityGrid::CIC(Vec v, const Particle &pp, bool overdense) {
   VecGetArray(pp.px, &_px); 
   VecGetArray(pp.py, &_py);
   VecGetArray(pp.pz, &_pz);
+  VecGetArray(pp.pw, &_pw);
 
   for (PetscInt ip=0; ip < nlocal; ++ip) {
       x0 = periodic(_px[ip]/L); // Scaled periodic versions of coordinates
       y0 = periodic(_py[ip]/L);
       z0 = periodic(_pz[ip]/L);
+      w0 = _pw[ip];
       ix = (int)(Ng*x0); ii[0] = (ix+1); dx = Ng*x0-ix;
       iy = (int)(Ng*y0); ii[1] = (iy+1); dy = Ng*y0-iy;
       iz = (int)(Ng*z0); ii[2] = (iz+1); dz = Ng*z0-iz;
 
       // Do the interpolation.  Go ahead and use the indexing operator
       // for the density field.
-      (*this)(ix,   iy   ,iz   ) += (1.0-dx)*(1.0-dy)*(1.0-dz);
-      (*this)(ii[0],iy   ,iz   ) +=      dx *(1.0-dy)*(1.0-dz);
-      (*this)(ix   ,ii[1],iz   ) += (1.0-dx)*     dy *(1.0-dz);
-      (*this)(ix   ,iy   ,ii[2]) += (1.0-dx)*(1.0-dy)*     dz ;
-      (*this)(ii[0],ii[1],iz   ) +=      dx *     dy *(1.0-dz);
-      (*this)(ii[0],iy   ,ii[2]) +=      dx *(1.0-dy)*     dz ;
-      (*this)(ix   ,ii[1],ii[2]) += (1.0-dx)*     dy *     dz ;
-      (*this)(ii[0],ii[1],ii[2]) +=      dx *     dy *     dz ;
+      (*this)(ix,   iy   ,iz   ) += (1.0-dx)*(1.0-dy)*(1.0-dz)*w0;
+      (*this)(ii[0],iy   ,iz   ) +=      dx *(1.0-dy)*(1.0-dz)*w0;
+      (*this)(ix   ,ii[1],iz   ) += (1.0-dx)*     dy *(1.0-dz)*w0;
+      (*this)(ix   ,iy   ,ii[2]) += (1.0-dx)*(1.0-dy)*     dz *w0;
+      (*this)(ii[0],ii[1],iz   ) +=      dx *     dy *(1.0-dz)*w0;
+      (*this)(ii[0],iy   ,ii[2]) +=      dx *(1.0-dy)*     dz *w0;
+      (*this)(ix   ,ii[1],ii[2]) += (1.0-dx)*     dy *     dz *w0;
+      (*this)(ii[0],ii[1],ii[2]) +=      dx *     dy *     dz *w0;
   }
   VecRestoreArray(pp.px, &_px);
   VecRestoreArray(pp.py, &_py);
   VecRestoreArray(pp.pz, &_pz);
+  VecRestoreArray(pp.pw, &_pw);
 
 
   // Push out updates 
