@@ -93,6 +93,7 @@ int main(int argc, char *args[]) {
       hdr << "# boxsize=" << setw(8) << fixed << setprecision(2) << pars.Lbox << endl;
       hdr << "# bias=" << setw(8) << setprecision(2) << pars.recon.bias << endl;
       hdr << "# fval=" << setw(8) << setprecision(2) << pars.recon.fval << endl;
+      hdr << "# beta=" << setw(8) << setprecision(2) << pars.recon.beta << endl;
       hdr << "# smooth=" << setw(8) << setprecision(2) << pars.recon.smooth << endl;
       hdr << "# Mask threshold =" << pars.mask.thresh << endl;
       hdr << "# Mask random file =" << pars.mask.fn << endl;

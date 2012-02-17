@@ -69,7 +69,7 @@ class Params {
 
     // Recon parameters 
     struct reconst {
-      double bias, smooth, fval;
+      double bias, smooth, fval, beta;
       int maxit, nrandomfac; // note nrandomfac is not used in some codes, but we still read it in
       double rtol, atol; // Tolerances for the converge of the "Poisson" solver. 
       vector<double> origin;
@@ -130,6 +130,8 @@ class LasDamasParams : public Params {
     struct Pkpriorst {
       string fn;
       double bias, noise;
+      int dorandom; // A simple way to switch on and off the random part of the code
+                    // if dorandom = 0 do not use the random part of the code, else do.
     };
     Pkpriorst pkprior; 
     
