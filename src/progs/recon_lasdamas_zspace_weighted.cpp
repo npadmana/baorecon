@@ -74,7 +74,7 @@ int main(int argc, char *args[]) {
 
     // Define the potential solver 
     PotentialSolve psolve(pars.Ngrid, pars.Lbox, pars.recon.maxit);
-    psolve.SetupOperator(RADIAL, pars.recon.fval, pars.recon.origin);
+    psolve.SetupOperator(RADIAL, pars.recon.beta, pars.recon.origin);
     
 
     // Loop over files
