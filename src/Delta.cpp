@@ -310,19 +310,23 @@ void BuildDensityGrid(int N, double L, Mask3D& mask, Particle& pp, int nover, do
 
 
 
-void Delta::HoffmanRibak(Vec& c, vector<double>& kprior, vector<double>& pkprior, int seed, double tol) {
+void Delta::HoffmanRibak(Vec& c, vector<double>& kprior, vector<double>& pkprior, 
+                         int seed, double tol, int dorandom) {
 
   // Set up preconditioner
   vector<double> precondpk(pkprior);
   for (int ii=0; ii<pkprior.size(); ++ii) precondpk[ii] = 1./pkprior[ii];
 
-
-  // Start by generating a Gaussian density field
+  // Allocate space for a random Gaussian field
   Vec f; f = dg1.Allocate();
-  dg1.FakeGauss(seed, f, kprior, pkprior);
 
   // Define the RHS vector
-  VecAXPY(c, -1.0, f);
+  // Start by generating a Gaussian density field
+  // We only do this if we are generating a random Gaussian field
+  if (dorandom > 0) {
+    dg1.FakeGauss(seed, f, kprior, pkprior);
+    VecAXPY(c, -1.0, f);
+  }
   VecPointwiseMult(c, W, c);
 
   // Now set up for CG solution
@@ -370,7 +374,9 @@ void Delta::HoffmanRibak(Vec& c, vector<double>& kprior, vector<double>& pkprior
 
   // Finish up generating the realization 
   dg1.kConvolve(c, kprior, pkprior);
-  VecAXPY(c, 1.0, f);  
+  // If we are generating a random field, instead of the simple WF
+  if (dorandom > 0) 
+    VecAXPY(c, 1.0, f);  
 
   // Clean up the CG vectors
   VecDestroy(rk); VecDestroy(f); VecDestroy(pk); VecDestroy(Axk); VecDestroy(zk);

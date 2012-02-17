@@ -447,7 +447,8 @@ class Delta {
      *
      *     c is destroyed, and f must be allocated.
      */     
-    void HoffmanRibak(Vec& c, vector<double>& kprior, vector<double>& pkprior, int seed, double tol=1.e-5);
+    void HoffmanRibak(Vec& c, vector<double>& kprior, vector<double>& pkprior, 
+                      int seed, double tol=1.e-5, int dorandom=1);
 };
 
 
