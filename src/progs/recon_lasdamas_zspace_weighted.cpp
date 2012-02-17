@@ -130,7 +130,7 @@ int main(int argc, char *args[]) {
       Vec grid=PETSC_NULL;
       del1.BuildDensityGrid(pp, grid);
       PetscPrintf(PETSC_COMM_WORLD, "Density grid computed.....\n");
-      del1.HoffmanRibak(grid, kvec, pkvec, const_seed); const_seed+=1;
+      del1.HoffmanRibak(grid, kvec, pkvec, const_seed, pars.pkprior.dorandom); const_seed+=1;
       PetscPrintf(PETSC_COMM_WORLD, "Constrained realization computed.....\n");
 
       /************************************************
