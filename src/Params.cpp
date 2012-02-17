@@ -20,6 +20,7 @@ Params::Params(string configfn) {
 
     // The fields below are optional
     ticpp::Element *elt;
+    recon.beta = 0.0;
     elt = root->FirstChildElement("ReconParams")->FirstChildElement("beta", false);
     if (elt) elt->GetTextOrDefault(&recon.beta, 0.0);
     recon.fval = recon.beta * recon.bias;
@@ -146,8 +147,12 @@ LasDamasParams::LasDamasParams(string configfn, string fntype) : Params(configfn
     // Pk prior  
     root->FirstChildElement("PkPrior")->FirstChildElement("bias")->GetText(&pkprior.bias);
     root->FirstChildElement("PkPrior")->FirstChildElement("noise")->GetText(&pkprior.noise);
-    root->FirstChildElement("PkPrior")->FirstChildElement("dorandom")->GetText(&pkprior.dorandom);
     pkprior.fn = root->FirstChildElement("PkPrior")->FirstChildElement("fn")->GetText();
+    // This is optional 
+    ticpp::Element *elt;
+    pkprior.dorandom = 1;
+    elt = root->FirstChildElement("PkPrior")->FirstChildElement("dorandom");
+    if (elt) elt->GetTextOrDefault(&pkprior.dorandom, 0);
 
 
     // Las Damas parameters
