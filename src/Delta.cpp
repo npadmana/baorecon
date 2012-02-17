@@ -311,7 +311,7 @@ void BuildDensityGrid(int N, double L, Mask3D& mask, Particle& pp, int nover, do
 
 
 void Delta::HoffmanRibak(Vec& c, vector<double>& kprior, vector<double>& pkprior, 
-                         int seed, double tol, int dorandom) {
+                         int seed, int dorandom, double tol ) {
 
   // Set up preconditioner
   vector<double> precondpk(pkprior);
