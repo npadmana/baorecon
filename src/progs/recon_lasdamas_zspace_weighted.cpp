@@ -74,7 +74,7 @@ int main(int argc, char *args[]) {
 
     // Define the potential solver 
     PotentialSolve psolve(pars.Ngrid, pars.Lbox, pars.recon.maxit);
-    if (pars.recon.planeparallel == 0) {
+    if (pars.recon.planeparallel == 1) {
       psolve.SetupOperator(CARTPBC, pars.recon.beta);
       PetscPrintf(PETSC_COMM_WORLD, "Using the plane parallel approximation\n");
     } else {
@@ -174,7 +174,7 @@ int main(int argc, char *args[]) {
 	PetscPrintf(PETSC_COMM_WORLD, "Standard displacements complete\n");
 
 
-        if (pars.recon.planeparallel == 0) {
+        if (pars.recon.planeparallel == 1) {
           // This case is simple!
           VecAXPY(pp.pz, -1.0, qz);
 	  PetscPrintf(PETSC_COMM_WORLD, "plane parallel zspace displacements complete\n");
