@@ -73,6 +73,8 @@ class Params {
       int maxit, nrandomfac; // note nrandomfac is not used in some codes, but we still read it in
       double rtol, atol; // Tolerances for the converge of the "Poisson" solver. 
       vector<double> origin;
+      int planeparallel; // If set, assume that the coordinates are as defined and that the redshift shift
+                         // is purely in the z-direction
     };
     reconst recon;
 

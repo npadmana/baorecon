@@ -24,6 +24,10 @@ Params::Params(string configfn) {
     elt = root->FirstChildElement("ReconParams")->FirstChildElement("beta", false);
     if (elt) elt->GetTextOrDefault(&recon.beta, 0.0);
     recon.fval = recon.beta * recon.bias;
+    recon.planeparallel = 0;
+    elt = root->FirstChildElement("ReconParams")->FirstChildElement("planeparallel");
+    if (elt) elt->GetTextOrDefault(&recon.planeparallel, 0);
+    
 
     // Tolerances, max iterations
     elt = root->FirstChildElement("ReconParams")->FirstChildElement("MaxIterations", false);
