@@ -558,15 +558,16 @@ void Particle::SlabDecompose(const DensityGrid& g) {
 
   VecRestoreArray(px, &_px);
   ISCreateStride(PETSC_COMM_WORLD, nlocal, lo, 1, &is1);
-  ISCreateGeneralWithArray(PETSC_COMM_WORLD, nlocal, &idx[0], &is2);
+  ISCreateGeneral(PETSC_COMM_WORLD, nlocal, &idx[0], PETSC_USE_POINTER, &is2);
 
 
   // RS:  Rearrange the particles amongst the processes according to our
   // scheme, i.e., so that each processor has all particles in a slab dx.
   // Create a new temporary vector to scatter to 
   Vec tmp;
-  VecCreateMPI(narr[rank], PETSC_DETERMINE, &tmp);
-  VecScatter vs = VecScatterCreate(px, is1, tmp, is2);
+  VecCreateMPI(PETSC_COMM_WORLD,narr[rank], PETSC_DETERMINE, &tmp);
+  VecScatter vs;
+  VecScatterCreate(px, is1, tmp, is2, &vs);
   // Scatter px
   VecScatterBegin(vs, px, tmp, INSERT_VALUES, SCATTER_FORWARD);
   VecScatterEnd(vs, px, tmp, INSERT_VALUES, SCATTER_FORWARD);
@@ -585,9 +586,10 @@ void Particle::SlabDecompose(const DensityGrid& g) {
   VecDestroy(&pw); VecDuplicate(tmp, &pw); VecCopy(tmp, pw); 
 
   // Clean up
+  VecScatterDestroy(&vs);
   VecDestroy(&tmp);
-  ISDestroy(is1);
-  ISDestroy(is2);
+  ISDestroy(&is1);
+  ISDestroy(&is2);
 
 }
 
