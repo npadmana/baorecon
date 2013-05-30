@@ -31,7 +31,7 @@ void PotentialSolve::_BuildCARTPBC(double fval) {
   _dg1.size(local, global);
   // Allocate maximum values of diagonal and off-diagonal memory
   // This is a little wasteful, but it simplifies the amount you need to think
-  MatCreateMPIAIJPERM(PETSC_COMM_WORLD, local, local, global, global,7, PETSC_NULL, 2, PETSC_NULL, &a);
+  MatCreateAIJ(PETSC_COMM_WORLD, local, local, global, global,7, PETSC_NULL, 2, PETSC_NULL, &a);
   _dg1.slab(lo, hi);
   Ng2 = Ng+2;
 
@@ -77,7 +77,7 @@ void PotentialSolve::_BuildRADIAL(double fval, vector<double>& origin) {
 
   // Get sizes
   _dg1.size(local, global);
-  MatCreateMPIAIJPERM(PETSC_COMM_WORLD, local, local, global, global,19, PETSC_NULL, 10, PETSC_NULL, &a);
+  MatCreateAIJ(PETSC_COMM_WORLD, local, local, global, global,19, PETSC_NULL, 10, PETSC_NULL, &a);
   _dg1.slab(lo, hi);
   Ng2 = Ng+2;
 
