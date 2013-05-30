@@ -30,7 +30,7 @@
 #define TIXML_USE_TICPP
 #include "ticpp/ticpp.h"
 
-#define RAISE_ERR(n,s)              {PetscError(PETSC_COMM_WORLD,__LINE__,__FUNCT__,__FILE__,__SDIR__,n,1,s); MPI_Abort(PETSC_COMM_WORLD, n);}
+#define RAISE_ERR(n,s)              {PetscError(PETSC_COMM_WORLD,__LINE__,__FUNCT__,__FILE__,__SDIR__,n,PETSC_ERROR_INITIAL,s); MPI_Abort(PETSC_COMM_WORLD, n);}
 
 #ifndef M_PI
 #define M_PI 3.141592653589793238462643
