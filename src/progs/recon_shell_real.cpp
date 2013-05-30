@@ -122,7 +122,7 @@ int main(int argc, char *args[]) {
       dg.CIC(grid, pp);
       dg.XiFFT(grid, pars.xi.smooth, xi1);
       PetscPrintf(PETSC_COMM_WORLD,"Initial correlation function computed....\n");
-      VecDestroy(grid);
+      VecDestroy(&grid);
 
       /*************************************************
        * Generate the density field and constrained realization

@@ -85,7 +85,7 @@ int main(int argc, char *args[]) {
       PetscSynchronizedFlush(PETSC_COMM_WORLD);
       PetscFClose(PETSC_COMM_WORLD, fp);
 
-      VecDestroy(grid); VecDestroy(grid_save);
+      VecDestroy(&grid); VecDestroy(&grid_save);
     }
 
 

@@ -379,6 +379,6 @@ void Delta::HoffmanRibak(Vec& c, vector<double>& kprior, vector<double>& pkprior
     VecAXPY(c, 1.0, f);  
 
   // Clean up the CG vectors
-  VecDestroy(rk); VecDestroy(f); VecDestroy(pk); VecDestroy(Axk); VecDestroy(zk);
+  VecDestroy(&rk); VecDestroy(&f); VecDestroy(&pk); VecDestroy(&Axk); VecDestroy(&zk);
 
 }

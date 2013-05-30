@@ -570,22 +570,22 @@ void Particle::SlabDecompose(const DensityGrid& g) {
   // Scatter px
   VecScatterBegin(vs, px, tmp, INSERT_VALUES, SCATTER_FORWARD);
   VecScatterEnd(vs, px, tmp, INSERT_VALUES, SCATTER_FORWARD);
-  VecDestroy(px); VecDuplicate(tmp, &px); VecCopy(tmp, px); 
+  VecDestroy(&px); VecDuplicate(tmp, &px); VecCopy(tmp, px); 
   // py
   VecScatterBegin(vs, py, tmp, INSERT_VALUES, SCATTER_FORWARD);
   VecScatterEnd(vs, py, tmp, INSERT_VALUES, SCATTER_FORWARD);
-  VecDestroy(py); VecDuplicate(tmp, &py); VecCopy(tmp, py); 
+  VecDestroy(&py); VecDuplicate(tmp, &py); VecCopy(tmp, py); 
   // pz
   VecScatterBegin(vs, pz, tmp, INSERT_VALUES, SCATTER_FORWARD);
   VecScatterEnd(vs, pz, tmp, INSERT_VALUES, SCATTER_FORWARD);
-  VecDestroy(pz); VecDuplicate(tmp, &pz); VecCopy(tmp, pz); 
+  VecDestroy(&pz); VecDuplicate(tmp, &pz); VecCopy(tmp, pz); 
   // pw
   VecScatterBegin(vs, pw, tmp, INSERT_VALUES, SCATTER_FORWARD);
   VecScatterEnd(vs, pw, tmp, INSERT_VALUES, SCATTER_FORWARD);
-  VecDestroy(pw); VecDuplicate(tmp, &pw); VecCopy(tmp, pw); 
+  VecDestroy(&pw); VecDuplicate(tmp, &pw); VecCopy(tmp, pw); 
 
   // Clean up
-  VecDestroy(tmp);
+  VecDestroy(&tmp);
   ISDestroy(is1);
   ISDestroy(is2);
 
@@ -675,16 +675,16 @@ void Particle::TrimMask(Mask3D& mask)
   // And now we swap
   // RS:  Overwrite the class member copies of the particle position vectors
   // with the local ones we just constructed.
-  VecDestroy(px); VecDuplicate(px1, &px); VecCopy(px1, px);
-  VecDestroy(py); VecDuplicate(py1, &py); VecCopy(py1, py);
-  VecDestroy(pz); VecDuplicate(pz1, &pz); VecCopy(pz1, pz);
-  VecDestroy(pw); VecDuplicate(pw1, &pw); VecCopy(pw1, pw);
+  VecDestroy(&px); VecDuplicate(px1, &px); VecCopy(px1, px);
+  VecDestroy(&py); VecDuplicate(py1, &py); VecCopy(py1, py);
+  VecDestroy(&pz); VecDuplicate(pz1, &pz); VecCopy(pz1, pz);
+  VecDestroy(&pw); VecDuplicate(pw1, &pw); VecCopy(pw1, pw);
 
   // Clean up
-  VecDestroy(px1);
-  VecDestroy(py1);
-  VecDestroy(pz1);
-  VecDestroy(pw1);
+  VecDestroy(&px1);
+  VecDestroy(&py1);
+  VecDestroy(&pz1);
+  VecDestroy(&pw1);
 
   // Set npart
   VecGetSize(px, &np);

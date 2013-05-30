@@ -32,7 +32,7 @@ int main(int argc, char *args[]) {
       dg.CIC(grid, pp);
       PkStruct Xi1(10.0, 3.0, 60);
       dg.XiFFT(grid, 2.0, Xi1);
-      VecDestroy(grid);
+      VecDestroy(&grid);
 
 
       // Generate the shell density grid
@@ -44,7 +44,7 @@ int main(int argc, char *args[]) {
       // Compute xi
       PkStruct Xi2(10.0,3.0,60);
       dg.XiFFT_W(grid, del1.W,2.0,Xi2);
-      VecDestroy(grid);
+      VecDestroy(&grid);
 
 
       // Print out results
