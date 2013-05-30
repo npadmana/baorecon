@@ -1,0 +1,8 @@
+# SWAP in the CMakeLists.txt.hopper file
+
+module swap PrgEnv-pgi PrgEnv-gnu
+
+module load fftw/2.1.5.4
+module load petsc
+module load gsl/1.15
+module load hdf5
