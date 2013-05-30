@@ -71,8 +71,8 @@ void PkStruct::finalize() {
 
   //Normalize and return 
   VecShift(nmodes, 1.e-20);
-  VecPointwiseDivide(pkvec, nmodes);
-  VecPointwiseDivide(kvec, nmodes);
+  VecPointwiseDivide(pkvec, pkvec, nmodes);
+  VecPointwiseDivide(kvec, kvec, nmodes);
 
   VecGetArray(kvec, &_kvec);
   VecGetArray(pkvec, &_pkvec);
