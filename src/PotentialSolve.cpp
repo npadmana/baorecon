@@ -180,7 +180,7 @@ void PotentialSolve::SetupOperator(PotentialOp optype, double fval, vector<doubl
   }
 
   // Sanity check
-  PetscTruth isNull;
+  PetscBool isNull;
   MatNullSpaceTest(mnull, a, &isNull);
   if (isNull != PETSC_TRUE) {
      PetscPrintf(PETSC_COMM_WORLD, "Warning -- Null space is not truly a null space!\n");
