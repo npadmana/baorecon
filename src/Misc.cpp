@@ -14,9 +14,9 @@ double periodic(double x, double L) {
 
 // Safe vector cleanup
 void _mydestroy(Vec &v) {
-  PetscBool flg;
-  VecValid(v, &flg);
-  if (flg) VecDestroy(&v);
+  //PetscBool flg;
+  //VecValid(v, &flg);
+  if (v!=0) VecDestroy(&v);
 }
 
 
