@@ -100,7 +100,7 @@ void DensityGrid::Pull(Vec v, bool config) {
     if (config) {
       VecGhostUpdateBegin(v,INSERT_VALUES,SCATTER_FORWARD);
       VecGhostUpdateEnd(v,INSERT_VALUES,SCATTER_FORWARD);
-      _grid = VecGhostGetLocalForm(v);
+      VecGhostGetLocalForm(v, &_grid);
       VecGetArray(_grid, &_ldata);
     } else {
       VecGetArray(v, &_ldata);
