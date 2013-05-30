@@ -177,7 +177,7 @@ void Delta::BuildDensityGrid(Particle& pp, Vec& delta)
   // Normalization factor
   // RS:  This equals the *average* number (per allowed cell) of "randoms"
   // compared to the number of particles from which we're building delta.
-  VecPointwiseMult(delta, W);
+  VecPointwiseMult(delta, delta, W);
   double fac;
   VecSum(delta, &fac);
   fac = nrand/fac;
@@ -350,8 +350,8 @@ void Delta::HoffmanRibak(Vec& c, vector<double>& kprior, vector<double>& pkprior
     
     // Compute alpha_k
     VecCopy(pk, Axk); dg1.kConvolve(Axk, kprior, pkprior); VecPointwiseMult(Axk, W, Axk);
-    rz = VecDot(rk, zk);
-    tmp1 = VecDot(pk, Axk);
+    VecDot(rk, zk, &rz);
+    VecDot(pk, Axk, &tmp1);
     alphak = rz/tmp1;
     
     // Update x and r
@@ -360,7 +360,7 @@ void Delta::HoffmanRibak(Vec& c, vector<double>& kprior, vector<double>& pkprior
     VecAXPY(rk, -alphak, Axk);
     VecNorm(rk, NORM_2, &rnorm);
     VecCopy(rk, zk); dg1.kConvolve(zk, kprior, precondpk); VecPointwiseMult(zk, W, zk);
-    rz = VecDot(rk, zk);
+    VecDot(rk, zk, &rz);
 
     // Compute beta_k
     betak = rz/rz1;
