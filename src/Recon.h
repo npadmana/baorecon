@@ -9,12 +9,13 @@
 
 // Header file for a Parallel particle class
 // Uses PETSc for distributed vectors
-#include "petscsys.h"
-#include "petscvec.h"
-#include "petscmat.h"
-#include "petscpc.h"
-#include "petscksp.h"
-#include "petsctime.h"
+//#include "petscsys.h"
+//#include "petscvec.h"
+//#include "petscmat.h"
+//#include "petscpc.h"
+//#include "petscksp.h"
+//#include "petsctime.h"
+#include "petsc.h"
 
 //GSL includes
 #include <gsl/gsl_rng.h>
