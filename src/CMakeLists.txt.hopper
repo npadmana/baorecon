@@ -27,7 +27,7 @@ link_directories("$ENV{GSL_DIR}/lib")
 
 ADD_LIBRARY(Recon Recon.h Misc.cpp Params.cpp Particle.cpp DensityGrid.cpp PotentialSolve.cpp Delta.cpp)  
 TARGET_LINK_LIBRARIES(Recon ${FFTW_LIBS})
-TARGET_LINK_LIBRARIES(Recon craypetsc_gnu_real)
+TARGET_LINK_LIBRARIES(Recon petsc)
 TARGET_LINK_LIBRARIES(Recon ${GSL_LIBS}) 
 TARGET_LINK_LIBRARIES(Recon ticpp) 
 
