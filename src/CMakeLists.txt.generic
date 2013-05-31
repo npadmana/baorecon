@@ -18,12 +18,13 @@ link_directories("$ENV{FFTW_DIR}/lib")
 set(FFTW_LIBS drfftw_mpi dfftw_mpi drfftw dfftw m)
 link_directories("$ENV{PETSC_DIR}/lib")
 set(GSL_LIBS gsl gslcblas)  
+set(PETSC_LIBS petsc)
 
 link_directories("$ENV{GSL_DIR}/lib")
 
 ADD_LIBRARY(Recon SHARED Recon.h Misc.cpp Params.cpp Particle.cpp DensityGrid.cpp PotentialSolve.cpp Delta.cpp)  
 TARGET_LINK_LIBRARIES(Recon ${FFTW_LIBS})
-TARGET_LINK_LIBRARIES(Recon petsc)
+TARGET_LINK_LIBRARIES(Recon ${PETSC_LIBS})
 TARGET_LINK_LIBRARIES(Recon ${GSL_LIBS}) 
 TARGET_LINK_LIBRARIES(Recon ticpp) 
 

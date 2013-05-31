@@ -21,13 +21,14 @@ include_directories("$ENV{HDF5_DIR}/include")
 link_directories("$ENV{FFTW_DIR}")
 set(FFTW_LIBS drfftw_mpi dfftw_mpi drfftw dfftw m)
 link_directories("$ENV{PETSC_DIR}/$ENV{PETSC_ARCH}/lib")
-set(GSL_LIBS gsl gslcblas)  
+set(GSL_LIBS gsl gslcblas) 
+set(PETSC_LIBS craypetsc_gnu_real) 
 
 link_directories("$ENV{GSL_DIR}/lib")
 
 ADD_LIBRARY(Recon Recon.h Misc.cpp Params.cpp Particle.cpp DensityGrid.cpp PotentialSolve.cpp Delta.cpp)  
 TARGET_LINK_LIBRARIES(Recon ${FFTW_LIBS})
-TARGET_LINK_LIBRARIES(Recon petsc)
+TARGET_LINK_LIBRARIES(Recon ${PETSC_LIBS})
 TARGET_LINK_LIBRARIES(Recon ${GSL_LIBS}) 
 TARGET_LINK_LIBRARIES(Recon ticpp) 
 
