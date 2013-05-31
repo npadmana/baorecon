@@ -21,7 +21,7 @@ int main(int argc, char *args[]) {
       PetscSynchronizedFlush(PETSC_COMM_WORLD);
 
       double sum, min, max;
-      VecSum(pp.px, &sum); VecMin(pp.px, &min); VecMax(pp.px, &max);
+      VecSum(pp.px, &sum); VecMin(pp.px, NULL, &min); VecMax(pp.px, NULL, &max);
       PetscPrintf(PETSC_COMM_WORLD,"px average= %10.6f, min=%10.6f, max-1=%10.6e\n",sum/pp.npart, min, max-1.0);
       VecSum(pp.py, &sum); VecMin(pp.py, &min); VecMax(pp.py, &max);
       PetscPrintf(PETSC_COMM_WORLD,"py average= %10.6f, min=%10.6f, max-1=%10.6e\n",sum/pp.npart, min, max-1.0);
