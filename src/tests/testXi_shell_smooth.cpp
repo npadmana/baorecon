@@ -16,12 +16,12 @@ int main(int argc, char *args[]) {
       Particle pp;
       Vec grid;
       PetscInt Ngrid;
-      PetscTruth flg;
+      PetscBool flg;
       int rank;
 
       // Read in the data
       MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-      PetscOptionsGetInt("-n", &Ngrid, &flg);
+      PetscOptionsGetInt(NULL,"-n", &Ngrid, &flg);
       if (!flg) Ngrid=64; // Testing, after all
       PetscPrintf(PETSC_COMM_WORLD, "Using Ngrid=%i\n", (int) Ngrid);
       DensityGrid dg(Ngrid, 2000.0);

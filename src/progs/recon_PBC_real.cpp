@@ -19,12 +19,12 @@ int main(int argc, char *args[]) {
 
     // Read in configuration file
     char configfn[200]; 
-    PetscTruth flg; 
+    PetscBool flg; 
 
     // See if we need help
-    PetscOptionsHasName("-help", &flg);
+    PetscOptionsHasName(NULL, "-help", &flg);
     if (flg) exit(0);
-    PetscOptionsGetString("-configfn", configfn, 200, &flg);
+    PetscOptionsGetString(NULL, "-configfn", configfn, 200, &flg);
     if (!flg) RAISE_ERR(99,"Specify configuration file");
     // Read in parameters
     PBCParams pars(string(configfn), "PBCreal"); 

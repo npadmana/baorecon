@@ -17,13 +17,13 @@ int main(int argc, char *args[]) {
       Particle pp;
       Vec grid, smooth, pot;
       PetscInt Ngrid;
-      PetscTruth flg;
+      PetscBool flg;
       PetscLogDouble t1, t2;
       int lo, hi;
       int rank;
 
       MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-      PetscOptionsGetInt("-n", &Ngrid, &flg);
+      PetscOptionsGetInt(NULL, "-n", &Ngrid, &flg);
       if (!flg) Ngrid=64; // Testing, after all
       PetscPrintf(PETSC_COMM_WORLD, "Using Ngrid=%i\n", (int) Ngrid);
       

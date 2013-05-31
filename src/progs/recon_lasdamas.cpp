@@ -25,48 +25,48 @@ int main(int argc, char *args[])
       PetscInt Ngrid, Nrbins;
       double boxsize, rmin,  dr, bias, smooth, mask0, mask1, maskthresh;
       char inpfn[200], inrfn[200], inmfn[200], outpfn[200], outrfn[200]; 
-      PetscTruth flg;
+      PetscBool flg;
       ostringstream hdr;
       int rank; MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 
-      PetscOptionsHasName("-help", &flg);
+      PetscOptionsHasName(NULL, "-help", &flg);
       if (flg) exit(0);
 
-      PetscOptionsGetString("-fn", inpfn, 200, &flg);
+      PetscOptionsGetString(NULL, "-fn", inpfn, 200, &flg);
       if (!flg) RAISE_ERR(99,"Specify inpfn");
       hdr << "# Galaxy file is " << inpfn << endl; 
-      PetscOptionsGetString("-fr", inrfn, 200, &flg);
+      PetscOptionsGetString(NULL, "-fr", inrfn, 200, &flg);
       if (!flg) RAISE_ERR(99,"Specify inrfn");
       hdr << "# Randoms file is " << inrfn << endl; 
-      PetscOptionsGetString("-fm", inmfn, 200, &flg);
+      PetscOptionsGetString(NULL, "-fm", inmfn, 200, &flg);
       if (!flg) RAISE_ERR(99,"Specify inmfn");
       hdr << "# Mask particles file is " << inmfn << endl; 
-      PetscOptionsGetString("-op", outpfn, 200, &flg);
+      PetscOptionsGetString(NULL, "-op", outpfn, 200, &flg);
       if (!flg) RAISE_ERR(99,"Specify outpfn");
       hdr << "# Shifted galaxy output file is " << outpfn << endl;
-      PetscOptionsGetString("-or", outrfn, 200, &flg);
+      PetscOptionsGetString(NULL, "-or", outrfn, 200, &flg);
       if (!flg) RAISE_ERR(99,"Specify outrfn");
       hdr << "# Shifted random output file is " << outpfn << endl;
 
-      PetscOptionsGetInt("-N", &Ngrid, &flg);
+      PetscOptionsGetInt(NULL, "-N", &Ngrid, &flg);
       if (!flg) Ngrid=64; 
       hdr << "# Ngrid=" << setw(5) << Ngrid << endl;
-      PetscOptionsGetScalar("-L", &boxsize, &flg);
+      PetscOptionsGetScalar(NULL, "-L", &boxsize, &flg);
       if (!flg) RAISE_ERR(99, "Set boxsize"); 
       hdr << "# boxsize=" << setw(8) << fixed << setprecision(2) << boxsize << endl;
 
-      PetscOptionsGetScalar("-bias", &bias, &flg);
+      PetscOptionsGetScalar(NULL, "-bias", &bias, &flg);
       if (!flg) bias=1; 
       hdr << "# bias=" << setw(8) << setprecision(2) << bias << endl;
-      PetscOptionsGetScalar("-smooth", &smooth, &flg);
+      PetscOptionsGetScalar(NULL, "-smooth", &smooth, &flg);
       if (!flg) smooth=20.0; 
       hdr << "# smooth=" << setw(8) << setprecision(2) << smooth << endl;
 
-      PetscOptionsGetScalar("-rmin", &rmin, &flg);
+      PetscOptionsGetScalar(NULL, "-rmin", &rmin, &flg);
       if (!flg) rmin=10.0; 
-      PetscOptionsGetScalar("-dr", &dr, &flg);
+      PetscOptionsGetScalar(NULL, "-dr", &dr, &flg);
       if (!flg) dr=3.0; 
-      PetscOptionsGetInt("-Nrbins", &Nrbins, &flg);
+      PetscOptionsGetInt(NULL, "-Nrbins", &Nrbins, &flg);
       if (!flg) Nrbins=50;
       hdr << "# " << setw(4) << Nrbins << " Xi bins from " << setw(8) << setprecision(2) << rmin 
         << " with spacing of " << dr << endl;
@@ -74,7 +74,7 @@ int main(int argc, char *args[])
       // RS:  these are just dummy mask parameters
       mask0=200.0; mask1=1800.0; 
       Shell maskss (0.0, 0.0, 0.0, mask0, mask1);
-      PetscOptionsGetScalar("-maskthresh", &maskthresh, &flg);
+      PetscOptionsGetScalar(NULL, "-maskthresh", &maskthresh, &flg);
       if (!flg) maskthresh=0.08; 
       hdr << "# Mask threshold = " << setprecision(2) << maskthresh
           << " particles per cell" << endl;

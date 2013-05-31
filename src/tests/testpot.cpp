@@ -17,10 +17,10 @@ int main(int argc, char *args[]) {
       Vec grid, pot;
       PetscInt Ngrid;
       int rank;
-      PetscTruth flg;
+      PetscBool flg;
 
       MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-      PetscOptionsGetInt("-n", &Ngrid, &flg);
+      PetscOptionsGetInt(NULL,"-n", &Ngrid, &flg);
       if (!flg) Ngrid=64; // Testing, after all
       PetscPrintf(PETSC_COMM_WORLD, "Using Ngrid=%i\n", (int) Ngrid);
 
@@ -64,7 +64,7 @@ int main(int argc, char *args[]) {
       VecAXPY(negdelta,1.0,grid);
       VecNorm(negdelta, NORM_2, &sum);
       PetscPrintf(PETSC_COMM_WORLD, "norm = %f\n",sum); 
-      MatDestroy(a); _mydestroy(negdelta);
+      MatDestroy(&a); _mydestroy(negdelta);
 
 
       // Cleanup
