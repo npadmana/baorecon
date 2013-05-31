@@ -17,7 +17,7 @@ int main(int argc, char *args[]) {
       PetscInt lo, hi;
       int rank, nk;
       PetscInt seed;
-      PetscTruth flg;
+      PetscBool flg;
       vector<double> kvec, pkvec;
       double k1, pk1, pk2, n1;
       
