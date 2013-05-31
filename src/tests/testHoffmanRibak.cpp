@@ -22,7 +22,7 @@ int main(int argc, char *args[]) {
       double k1, pk1, pk2, n1;
       
       // Get seed for constrained realization
-      PetscOptionsGetInt("-seed", &seed, &flg);
+      PetscOptionsGetInt(NULL, "-seed", &seed, &flg);
       if (!flg) seed=200; 
 
       // MPI Rank
@@ -60,7 +60,7 @@ int main(int argc, char *args[]) {
       VecCopy(grid, grid_save);
       double sum;
       VecSum(grid_save, &sum); PetscPrintf(PETSC_COMM_WORLD,"grid sum=%f\n",sum);
-      VecNorm(grid_save, &sum);PetscPrintf(PETSC_COMM_WORLD,"grid norm = %f\n", sum);
+      VecNorm(grid_save, NORM_2, &sum);PetscPrintf(PETSC_COMM_WORLD,"grid norm = %f\n", sum);
 
       // Hoffman-Ribak
       del.HoffmanRibak(grid, kvec, pkvec, seed);
@@ -68,7 +68,7 @@ int main(int argc, char *args[]) {
       // Test to see that the constraints have been satisfied
       VecAXPY(grid_save, -1.0, grid); 
       VecPointwiseMult(grid_save, del.W, grid_save);
-      VecNorm(grid_save, &sum);
+      VecNorm(grid_save, NORM_2, &sum);
       PetscPrintf(PETSC_COMM_WORLD, "residual norm = %f\n", sum);
 
       
