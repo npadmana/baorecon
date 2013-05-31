@@ -23,9 +23,9 @@ int main(int argc, char *args[]) {
       double sum, min, max;
       VecSum(pp.px, &sum); VecMin(pp.px, NULL, &min); VecMax(pp.px, NULL, &max);
       PetscPrintf(PETSC_COMM_WORLD,"px average= %10.6f, min=%10.6f, max-1=%10.6e\n",sum/pp.npart, min, max-1.0);
-      VecSum(pp.py, &sum); VecMin(pp.py, &min); VecMax(pp.py, &max);
+      VecSum(pp.py, &sum); VecMin(pp.py,NULL, &min); VecMax(pp.py,NULL, &max);
       PetscPrintf(PETSC_COMM_WORLD,"py average= %10.6f, min=%10.6f, max-1=%10.6e\n",sum/pp.npart, min, max-1.0);
-      VecSum(pp.pz, &sum); VecMin(pp.pz, &min); VecMax(pp.pz, &max);
+      VecSum(pp.pz, &sum); VecMin(pp.pz,NULL, &min); VecMax(pp.pz,NULL, &max);
       PetscPrintf(PETSC_COMM_WORLD,"pz average= %10.6f, min=%10.6f, max-1=%10.6e\n",sum/pp.npart, min, max-1.0);
 
     }
