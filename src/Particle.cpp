@@ -406,7 +406,7 @@ int Particle::AsciiWriteWeightedSerial(const char *outfilename)
        if (!fp) RAISE_ERR(99, "Unable to open file....\n");
 
        for (int ii = lo; ii < hi; ++ii) fprintf(fp, "%20.10e %20.10e %20.10e %20.10e %15d\n",
-                _px[ii-lo],_py[ii-lo],_pz[ii-lo], _pw[ii-lo], _pn[ii-lo]);
+                _px[ii-lo],_py[ii-lo],_pz[ii-lo], _pw[ii-lo], (long int) _pn[ii-lo]);
        fflush(fp);
        fclose(fp);
      }
