@@ -210,7 +210,7 @@ int Particle::AsciiReadWeightedSerial(const char *infilename)
       if (buf[0] == '#') continue;
 
       double x, y, z, w, xn;
-      sscanf (buf, "%lf %lf %lf %lf", &x, &y, &z, &w, &xn);
+      sscanf (buf, "%lf %lf %lf %lf %lf", &x, &y, &z, &w, &xn);
       tmpx.push_back(x); tmpy.push_back(y); tmpz.push_back(z); tmpw.push_back(w); tmpn.push_back(xn); idx.push_back(npart); npart++;
    }
 
