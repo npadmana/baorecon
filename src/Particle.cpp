@@ -10,6 +10,7 @@ Particle::~Particle() {
   _mydestroy(py);
   _mydestroy(pz);
   _mydestroy(pw);
+  _mydestroy(pn);
 };
 
 // Copy constructor
@@ -19,11 +20,12 @@ Particle::Particle(const Particle& p) {
   VecDuplicate(p.px, &py);
   VecDuplicate(p.px, &pz);
   VecDuplicate(p.pw, &pw);
+  VecDuplicate(p.pn, &pn);
   VecCopy(p.px, px);
   VecCopy(p.py, py);
   VecCopy(p.pz, pz);
   VecCopy(p.pw, pw);
-
+  VecCopy(p.pn, pn);
 }
 
 
@@ -82,6 +84,7 @@ int Particle::TPMReadSerial(const char *infilename, double L, bool zspace, bool 
    VecDuplicate(px, &py); 
    VecDuplicate(px, &pz); 
    VecDuplicate(px, &pw); 
+   VecDuplicate(px, &pn); 
 
 
    // Continue to read
@@ -157,6 +160,7 @@ int Particle::TPMReadSerial(const char *infilename, double L, bool zspace, bool 
      VecAssemblyBegin(pz); VecAssemblyEnd(pz);
      MPI_Bcast(&n,1,MPI_INT,0, PETSC_COMM_WORLD);
      VecSet(pw, 1.0); // TPM files have no weights, so we set all weights to 1
+     VecSet(pn, 1.0); // TPM files have no ids, so we set all ids to 1
    }
 
    
@@ -181,7 +185,7 @@ int Particle::AsciiReadWeightedSerial(const char *infilename)
    FILE *fpr;
    int rank;
    char buf[256];
-   vector<double> tmpx, tmpy, tmpz, tmpw;
+   vector<double> tmpx, tmpy, tmpz, tmpw, tmpn;
    vector<PetscInt> idx;
 
    // Get MPI rank 
@@ -205,9 +209,9 @@ int Particle::AsciiReadWeightedSerial(const char *infilename)
       if (feof(fpr)) break;
       if (buf[0] == '#') continue;
 
-      double x, y, z, w;
-      sscanf (buf, "%lf %lf %lf %lf", &x, &y, &z, &w);
-      tmpx.push_back(x); tmpy.push_back(y); tmpz.push_back(z); tmpw.push_back(w); idx.push_back(npart); npart++;
+      double x, y, z, w, xn;
+      sscanf (buf, "%lf %lf %lf %lf", &x, &y, &z, &w, &xn);
+      tmpx.push_back(x); tmpy.push_back(y); tmpz.push_back(z); tmpw.push_back(w); tmpn.push_back(xn); idx.push_back(npart); npart++;
    }
 
    // Number of particles = however many were read in.
@@ -219,6 +223,7 @@ int Particle::AsciiReadWeightedSerial(const char *infilename)
    VecDuplicate(px, &py); 
    VecDuplicate(px, &pz); 
    VecDuplicate(px, &pw);
+   VecDuplicate(px, &pn);
 
    // Fill the vectors by looping through the lists.
    PetscPrintf (PETSC_COMM_WORLD, "Filling vectors...\n");
@@ -228,6 +233,7 @@ int Particle::AsciiReadWeightedSerial(const char *infilename)
       VecSetValues(py, npart, &idx[0], &tmpy[0], INSERT_VALUES);
       VecSetValues(pz, npart, &idx[0], &tmpz[0], INSERT_VALUES);
       VecSetValues(pw, npart, &idx[0], &tmpw[0], INSERT_VALUES);
+      VecSetValues(pn, npart, &idx[0], &tmpn[0], INSERT_VALUES);
    }
 
    // Sync up the vectors in the different processes.
@@ -236,7 +242,8 @@ int Particle::AsciiReadWeightedSerial(const char *infilename)
    VecAssemblyBegin(py); VecAssemblyEnd(py);
    VecAssemblyBegin(pz); VecAssemblyEnd(pz);
    VecAssemblyBegin(pw); VecAssemblyEnd(pw);
-   
+   VecAssemblyBegin(pn); VecAssemblyEnd(pn);
+
 
    // Close the files, de-allocate the memory and shut down.
    PetscPrintf (PETSC_COMM_WORLD, "Closing file & finishing.\n");
@@ -291,6 +298,7 @@ int Particle::AsciiReadSerial(const char *infilename)
    VecDuplicate(px, &py); 
    VecDuplicate(px, &pz); 
    VecDuplicate(px, &pw);
+   VecDuplicate(px, &pn);
 
    // Fill the vectors by looping through the lists.
    PetscPrintf (PETSC_COMM_WORLD, "Filling vectors...\n");
@@ -309,6 +317,7 @@ int Particle::AsciiReadSerial(const char *infilename)
    
    // This is for unweighted files
    VecSet(pw, 1.0);
+   VecSet(pn, 1.0);
 
 
    // Close the files, de-allocate the memory and shut down.
@@ -377,13 +386,13 @@ int Particle::AsciiWriteWeightedSerial(const char *outfilename)
    MPI_Comm_size(PETSC_COMM_WORLD, &size);
 	
    // Print out 
-   double *_px, *_py, *_pz, *_pw;
+   double *_px, *_py, *_pz, *_pw, *_pn;
    PetscInt lo, hi;
    FILE *fp; 
   
 
    VecGetOwnershipRange(px, &lo, &hi);
-   VecGetArray(px, &_px); VecGetArray(py, &_py); VecGetArray(pz, &_pz); VecGetArray(pw, &_pw);
+   VecGetArray(px, &_px); VecGetArray(py, &_py); VecGetArray(pz, &_pz); VecGetArray(pw, &_pw), VecGetArray(pn, &_pn);
    for (int iproc = 0; iproc < size; ++iproc) {
      if (iproc == rank) {
        /* The rank 0 process should open a new file. Everyone else 
@@ -396,14 +405,14 @@ int Particle::AsciiWriteWeightedSerial(const char *outfilename)
        }
        if (!fp) RAISE_ERR(99, "Unable to open file....\n");
 
-       for (int ii = lo; ii < hi; ++ii) fprintf(fp, "%20.10e %20.10e %20.10e %20.10e\n",
-                _px[ii-lo],_py[ii-lo],_pz[ii-lo], _pw[ii-lo]);
+       for (int ii = lo; ii < hi; ++ii) fprintf(fp, "%20.10e %20.10e %20.10e %20.10e %15d\n",
+                _px[ii-lo],_py[ii-lo],_pz[ii-lo], _pw[ii-lo], _pn[ii-lo]);
        fflush(fp);
        fclose(fp);
      }
      MPI_Barrier(PETSC_COMM_WORLD);
    }
-   VecRestoreArray(px,&_px); VecRestoreArray(py,&_py); VecRestoreArray(pz,&_pz); VecRestoreArray(pw, &_pw);
+   VecRestoreArray(px,&_px); VecRestoreArray(py,&_py); VecRestoreArray(pz,&_pz); VecRestoreArray(pw, &_pw); VecRestoreArray(pn, &_pn);
 }
 
 
@@ -419,6 +428,7 @@ void Particle::GridInitialize(int N, double dx, double dy, double dz, double L) 
   VecDuplicate(px, &py); 
   VecDuplicate(px, &pz);
   VecDuplicate(px, &pw);
+  VecDuplicate(px, &pn);
 
   
   VecGetOwnershipRange(px, &lo, &hi);
@@ -436,6 +446,7 @@ void Particle::GridInitialize(int N, double dx, double dy, double dz, double L) 
   VecAssemblyBegin(py); VecAssemblyEnd(py);
   VecAssemblyBegin(pz); VecAssemblyEnd(pz);
   VecSet(pw, 1.0); // This never needs weights...
+  VecSet(pn, 1.0); // This never needs indices
 }
 
 
@@ -454,6 +465,7 @@ void Particle::RandomInit(int _npart, double L, int seed) {
   VecDuplicate(px, &py); 
   VecDuplicate(px, &pz);
   VecDuplicate(px, &pw); VecSet(pw, 1.0);
+  VecDuplicate(px, &pn); VecSet(pn, 1.0);
 
   // Sizes
   VecGetOwnershipRange(px, &lo, &hi);
@@ -584,6 +596,11 @@ void Particle::SlabDecompose(const DensityGrid& g) {
   VecScatterBegin(vs, pw, tmp, INSERT_VALUES, SCATTER_FORWARD);
   VecScatterEnd(vs, pw, tmp, INSERT_VALUES, SCATTER_FORWARD);
   VecDestroy(&pw); VecDuplicate(tmp, &pw); VecCopy(tmp, pw); 
+   // pn
+  VecScatterBegin(vs, pn, tmp, INSERT_VALUES, SCATTER_FORWARD);
+  VecScatterEnd(vs, pn, tmp, INSERT_VALUES, SCATTER_FORWARD);
+  VecDestroy(&pn); VecDuplicate(tmp, &pn); VecCopy(tmp, pn); 
+
 
   // Clean up
   VecScatterDestroy(&vs);
@@ -620,10 +637,10 @@ void Particle::TrimMask(Mask3D& mask)
 // RS 2010/07/06:  Commented!
 {
   PetscInt lo, hi, np;
-  double *_px, *_py, *_pz, *_pw;
-  double *_px1, *_py1, *_pz1, *_pw1;
+  double *_px, *_py, *_pz, *_pw, *_pn;
+  double *_px1, *_py1, *_pz1, *_pw1, *_pn1;
   int lc=0, lc1=0;
-  Vec px1, py1, pz1, pw1;
+  Vec px1, py1, pz1, pw1, pn1;
 
    
   VecGetOwnershipRange(px, &lo, &hi);
@@ -634,6 +651,7 @@ void Particle::TrimMask(Mask3D& mask)
   VecGetArray(py, &_py);
   VecGetArray(pz, &_pz);
   VecGetArray(pw, &_pw);
+  VecGetArray(pn, &_pn);
   // RS:  Specifically, look at the position of each particle and see
   // whether the mask is 1 at that position.  If so, count it as "in".
   for (int ii=0; ii < np; ++ii) lc +=  mask(_px[ii], _py[ii], _pz[ii]);
@@ -645,18 +663,20 @@ void Particle::TrimMask(Mask3D& mask)
   VecDuplicate(px1, &py1);
   VecDuplicate(px1, &pz1);
   VecDuplicate(px1, &pw1);
+  VecDuplicate(px1, &pn1);
 
   // Get ready
   VecGetArray(px1, &_px1);
   VecGetArray(py1, &_py1);
   VecGetArray(pz1, &_pz1);
   VecGetArray(pw1, &_pw1);
+  VecGetArray(pn1, &_pn1);
 
   // RS:  Now just copy the particle data from the old arrays to the new ones
   // for each particle not cut out by the mask.
   for (int ii=0; ii < np; ++ii) 
     if (mask(_px[ii], _py[ii], _pz[ii])) {
-      _px1[lc1] = _px[ii]; _py1[lc1] = _py[ii]; _pz1[lc1] = _pz[ii]; _pw1[lc1] = _pw[ii];
+      _px1[lc1] = _px[ii]; _py1[lc1] = _py[ii]; _pz1[lc1] = _pz[ii]; _pw1[lc1] = _pw[ii]; _pn1[lc1] = _pw[ii];
       lc1++;
     }
 
@@ -669,10 +689,12 @@ void Particle::TrimMask(Mask3D& mask)
   VecRestoreArray(py, &_py);
   VecRestoreArray(pz, &_pz);
   VecRestoreArray(pw, &_pw);
+  VecRestoreArray(pn, &_pn);
   VecRestoreArray(px1, &_px1);
   VecRestoreArray(py1, &_py1);
   VecRestoreArray(pz1, &_pz1);
   VecRestoreArray(pw1, &_pw1);
+  VecRestoreArray(pn1, &_pn1);
 
   // And now we swap
   // RS:  Overwrite the class member copies of the particle position vectors
@@ -681,12 +703,14 @@ void Particle::TrimMask(Mask3D& mask)
   VecDestroy(&py); VecDuplicate(py1, &py); VecCopy(py1, py);
   VecDestroy(&pz); VecDuplicate(pz1, &pz); VecCopy(pz1, pz);
   VecDestroy(&pw); VecDuplicate(pw1, &pw); VecCopy(pw1, pw);
+  VecDestroy(&pn); VecDuplicate(pn1, &pn); VecCopy(pn1, pn);
 
   // Clean up
   VecDestroy(&px1);
   VecDestroy(&py1);
   VecDestroy(&pz1);
   VecDestroy(&pw1);
+  VecDestroy(&pn1);
 
   // Set npart
   VecGetSize(px, &np);
