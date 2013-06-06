@@ -202,7 +202,7 @@ int Particle::AsciiReadWeightedSerial(const char *infilename)
       npart = 0;
 
       for (;;) {
-        gets (buf, 255, fpr);
+        fgets (buf, 255, fpr);
         if (feof(fpr)) break;
         if (buf[0] == '#') continue;
         npart++;
