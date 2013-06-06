@@ -187,7 +187,7 @@ int Particle::AsciiReadWeightedSerial(const char *infilename)
    int rank;
    char buf[256];
    vector<double> tmpx(BUFSIZE), tmpy(BUFSIZE), tmpz(BUFSIZE), tmpw(BUFSIZE), tmpn(BUFSIZE);
-   vector<PetscInt> idx[BUFSIZE];
+   vector<PetscInt> idx(BUFSIZE);
 
    // Get MPI rank 
    MPI_Comm_rank(PETSC_COMM_WORLD,&rank);
