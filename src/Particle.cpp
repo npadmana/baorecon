@@ -182,11 +182,12 @@ int Particle::AsciiReadWeightedSerial(const char *infilename)
 // box-coordinates (x,y,z).  For randoms and/or rotated Las Damas format.
 // ---------------------------------------------------------------------------
 {
+   const int BUFSIZE=1000000;
    FILE *fpr;
    int rank;
    char buf[256];
-   vector<double> tmpx, tmpy, tmpz, tmpw, tmpn;
-   vector<PetscInt> idx;
+   vector<double> tmpx(BUFSIZE), tmpy(BUFSIZE), tmpz(BUFSIZE), tmpw(BUFSIZE), tmpn(BUFSIZE);
+   vector<PetscInt> idx[BUFSIZE];
 
    // Get MPI rank 
    MPI_Comm_rank(PETSC_COMM_WORLD,&rank);
@@ -199,24 +200,23 @@ int Particle::AsciiReadWeightedSerial(const char *infilename)
       if ((fpr = fopen(infilename,"r")) == NULL)
          RAISE_ERR(99, "Failed opening file...");
       npart = 0;
-   }
 
-   // Read the file.
-   PetscPrintf (PETSC_COMM_WORLD, "Reading from file...\n");
-   if (rank==0) for(;;)
-   {
-      fgets (buf, 255, fpr);
-      if (feof(fpr)) break;
-      if (buf[0] == '#') continue;
+      for (;;) {
+        gets (buf, 255, fpr);
+        if (feof(fpr)) break;
+        if (buf[0] == '#') continue;
+        npart++;
+      }
 
-      double x, y, z, w, xn;
-      sscanf (buf, "%lf %lf %lf %lf %lf", &x, &y, &z, &w, &xn);
-      tmpx.push_back(x); tmpy.push_back(y); tmpz.push_back(z); tmpw.push_back(w); tmpn.push_back(xn); idx.push_back(npart); npart++;
+      // Close and reopen 
+      fclose(fpr);
+      if ((fpr = fopen(infilename,"r")) == NULL)
+         RAISE_ERR(99, "Failed re-opening file...");
    }
 
    // Number of particles = however many were read in.
    MPI_Bcast(&npart, 1, MPI_INT, 0, PETSC_COMM_WORLD);
-   
+
    // Allocate vectors
    PetscPrintf (PETSC_COMM_WORLD, "Allocating vectors...\n");
    VecCreateMPI(PETSC_COMM_WORLD,PETSC_DECIDE,npart,&px);
@@ -225,25 +225,40 @@ int Particle::AsciiReadWeightedSerial(const char *infilename)
    VecDuplicate(px, &pw);
    VecDuplicate(px, &pn);
 
-   // Fill the vectors by looping through the lists.
-   PetscPrintf (PETSC_COMM_WORLD, "Filling vectors...\n");
-   if (rank==0)
-   {
+   // Read the file.
+   PetscPrintf (PETSC_COMM_WORLD, "Reading from file...\n");
+   // Work out how many iterations we need to take
+   int niter = (npart+BUFSIZE-1)/BUFSIZE;
+   for (int iiter=0; iiter < niter; ++iiter) {
+     npart = 0;
+     if (rank==0) for(;;)
+     {
+      fgets (buf, 255, fpr);
+      if (feof(fpr)) break;
+      if (npart==BUFSIZE) break;
+      if (buf[0] == '#') continue;
+
+      sscanf (buf, "%lf %lf %lf %lf %lf", &tmpx[npart], &tmpy[npart], &tmpz[npart], &tmpw[npart], &tmpn[npart]);
+      idx[npart] = npart+BUFSIZE*iiter;
+      npart++;
+     }
+
+     if (rank==0)
+     {
       VecSetValues(px, npart, &idx[0], &tmpx[0], INSERT_VALUES);
       VecSetValues(py, npart, &idx[0], &tmpy[0], INSERT_VALUES);
       VecSetValues(pz, npart, &idx[0], &tmpz[0], INSERT_VALUES);
       VecSetValues(pw, npart, &idx[0], &tmpw[0], INSERT_VALUES);
       VecSetValues(pn, npart, &idx[0], &tmpn[0], INSERT_VALUES);
+     }
+
+     VecAssemblyBegin(px); VecAssemblyEnd(px);
+     VecAssemblyBegin(py); VecAssemblyEnd(py);
+     VecAssemblyBegin(pz); VecAssemblyEnd(pz);
+     VecAssemblyBegin(pw); VecAssemblyEnd(pw);
+     VecAssemblyBegin(pn); VecAssemblyEnd(pn);
+
    }
-
-   // Sync up the vectors in the different processes.
-   PetscPrintf (PETSC_COMM_WORLD, "Assembling vectors...\n");
-   VecAssemblyBegin(px); VecAssemblyEnd(px);
-   VecAssemblyBegin(py); VecAssemblyEnd(py);
-   VecAssemblyBegin(pz); VecAssemblyEnd(pz);
-   VecAssemblyBegin(pw); VecAssemblyEnd(pw);
-   VecAssemblyBegin(pn); VecAssemblyEnd(pn);
-
 
    // Close the files, de-allocate the memory and shut down.
    PetscPrintf (PETSC_COMM_WORLD, "Closing file & finishing.\n");
