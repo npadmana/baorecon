@@ -229,27 +229,28 @@ int Particle::AsciiReadWeightedSerial(const char *infilename)
    PetscPrintf (PETSC_COMM_WORLD, "Reading from file...\n");
    // Work out how many iterations we need to take
    int niter = (npart+BUFSIZE-1)/BUFSIZE;
+   int ipart;
    for (int iiter=0; iiter < niter; ++iiter) {
-     npart = 0;
+     ipart = 0;
      if (rank==0) for(;;)
      {
       fgets (buf, 255, fpr);
       if (feof(fpr)) break;
-      if (npart==BUFSIZE) break;
+      if (ipart==BUFSIZE) break;
       if (buf[0] == '#') continue;
 
-      sscanf (buf, "%lf %lf %lf %lf %lf", &tmpx[npart], &tmpy[npart], &tmpz[npart], &tmpw[npart], &tmpn[npart]);
-      idx[npart] = npart+BUFSIZE*iiter;
-      npart++;
+      sscanf (buf, "%lf %lf %lf %lf %lf", &tmpx[ipart], &tmpy[ipart], &tmpz[ipart], &tmpw[ipart], &tmpn[ipart]);
+      idx[ipart] = ipart+BUFSIZE*iiter;
+      ipart++;
      }
 
      if (rank==0)
      {
-      VecSetValues(px, npart, &idx[0], &tmpx[0], INSERT_VALUES);
-      VecSetValues(py, npart, &idx[0], &tmpy[0], INSERT_VALUES);
-      VecSetValues(pz, npart, &idx[0], &tmpz[0], INSERT_VALUES);
-      VecSetValues(pw, npart, &idx[0], &tmpw[0], INSERT_VALUES);
-      VecSetValues(pn, npart, &idx[0], &tmpn[0], INSERT_VALUES);
+      VecSetValues(px, ipart, &idx[0], &tmpx[0], INSERT_VALUES);
+      VecSetValues(py, ipart, &idx[0], &tmpy[0], INSERT_VALUES);
+      VecSetValues(pz, ipart, &idx[0], &tmpz[0], INSERT_VALUES);
+      VecSetValues(pw, ipart, &idx[0], &tmpw[0], INSERT_VALUES);
+      VecSetValues(pn, ipart, &idx[0], &tmpn[0], INSERT_VALUES);
      }
 
      VecAssemblyBegin(px); VecAssemblyEnd(px);
