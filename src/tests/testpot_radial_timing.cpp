@@ -30,9 +30,9 @@ int main(int argc, char *args[]) {
       // Allocate potential solver
       vector<double> origin(3, 0.0);
       PotentialSolve psolve(Ngrid, BoxSize);
-      PetscGetTime(&t1);
+      PetscTime(&t1);
       psolve.SetupOperator(RADIAL, 0.4, origin);
-      PetscGetTime(&t2);
+      PetscTime(&t2);
       PetscPrintf(PETSC_COMM_WORLD,"Elapsed time = %e\n", t2-t1);
 
     }
