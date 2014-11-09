@@ -1,0 +1,7 @@
+# SWAP in the CMakeLists.txt.edison file
+
+module swap PrgEnv-pgi PrgEnv-gnu
+
+module load fftw/2.1.5.7
+setenv PETSC_DIR /global/homes/n/npadmana/recon/edison/petsc
+module load gsl/1.15
