@@ -3,5 +3,5 @@
 module swap PrgEnv-pgi PrgEnv-gnu
 
 module load fftw/2.1.5.7
-setenv PETSC_DIR /global/homes/n/npadmana/recon/edison/petsc
+setenv PETSC_DIR /global/homes/n/npadmana/recon/edison/3.4.5
 module load gsl/1.15
