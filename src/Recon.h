@@ -198,6 +198,7 @@ class Particle {
     int npart; // Note 32-bit integer here for particle number
     Vec px,py,pz; // PETSc vectors to store the particle positions
     Vec pw; // PETSc vector to store particle weights
+    Vec pzred; // PETSc vector to stor particle redshifts
     Vec pn; // PETSc vector to store particle ids
 
     // Constructors and destructors 
